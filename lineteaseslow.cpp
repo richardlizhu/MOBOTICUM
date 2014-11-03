@@ -148,17 +148,18 @@ int main(){
         	int numSum=0;
         	int consecCount;
         	int consecNum[WIDTH];
+        	int consecMax=0;
+        	int consecMaxPos;
+        	int consecMax2 = 0;
+        	int consecMaxPos2;
         	for (int x = 0; x < WIDTH; x++)
         	{
         		consecNum[x]=countConsec(imgBGR, r, x);
-        	}
-        	int consecMax=0;
-        	int consecMaxPos;
-        	for (int x = 0; x < WIDTH; x++)
-        	{
         		if (consecNum[x]>consecMax)
         		{
+        			consecMax2=consecMax;
         			consecMax=consecNum[x];
+        			consecMaxPos2=consecMaxPos;
         			consecMaxPos=x;
         		}
         	}
@@ -169,36 +170,29 @@ int main(){
         			(imgBGR.at<Vec3b>(r, x)).val[2] = 0;
         			(imgBGR.at<Vec3b>(r, x)).val[1] = 0;
         			(imgBGR.at<Vec3b>(r, x)).val[0] = 0;
+        			intensity = imgBGR.at<Vec3b>(r, x);
+        			pos = WIDTH * r + x;
+        			red[pos] = intensity.val[2];
+        			gre[pos] = intensity.val[1];
+        			blu[pos] = intensity.val[0];
+        			sum = (red[pos] / 3 + gre[pos] / 3 + blu[pos] / 3);
+        			if(sum > 0)
+        			{
+        				posSum = posSum+x;
+        				numSum++;
+        			}
         		}
-        	}
-        	for(int c = 0; c < WIDTH; c++)
-        	{
-        		intensity = imgBGR.at<Vec3b>(r, c);
-        		pos = WIDTH * r + c;
-        		red[pos] = intensity.val[2];
-        		gre[pos] = intensity.val[1];
-        		blu[pos] = intensity.val[0];
-        		sum = (red[pos] / 3 + gre[pos] / 3 + blu[pos] / 3);
-                //cout<<(uint) sum<<endl;
-        		if(sum > 0)
+        		if (numSum != 0)
         		{
-        			posSum = posSum+c;
-        			numSum++;
+        			int posAvg = posSum/numSum;
+        			(imgBGR.at<Vec3b>(r, posAvg)).val[2] = 255;
+        			(imgBGR.at<Vec3b>(r, posAvg)).val[1] = 0;
+        			(imgBGR.at<Vec3b>(r, posAvg)).val[0] = 0;
         		}
         	}
-        	if (numSum != 0)
-        	{
-        		int posAvg = posSum/numSum;
-        		(imgBGR.at<Vec3b>(r, posAvg)).val[2] = 255;
-        		(imgBGR.at<Vec3b>(r, posAvg)).val[1] = 0;
-        		(imgBGR.at<Vec3b>(r, posAvg)).val[0] = 0;
-        	}
+        	
         }
         printf("Write lined image\n");
         imwrite("Images/lineImg.png", imgBGR);
-
         return 0;
     }
-
-
-
